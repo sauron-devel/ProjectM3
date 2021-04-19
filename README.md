@@ -9,7 +9,7 @@
 `git config --global user.email "Your-Email"`
 
 **Pushing stuff to the repo**  
-`git init`  
+... *only the first time*:`git init`  
 `git add <file or folder name>`  
 `git commit -m "Add a message here"`  
 ... *only the first time*: `git remote add origin https://github.com/sauron-devel/ProjectM3`  
