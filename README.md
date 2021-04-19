@@ -16,7 +16,7 @@
 `git push`  
 
 **Pulling existing stuff from the repo**  
-First time: `git clone https://github.com/sauron-devel/ProjectM3 (if you do this, you don't need to do the 'git remote add' step)`  
+First time: `git clone https://github.com/sauron-devel/ProjectM3` (if you do this, you don't need to do the 'git remote add' step)
 Afterwards: `git pull`  
 
 
