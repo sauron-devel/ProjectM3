@@ -5,9 +5,9 @@
 ## Adding stuff to github  
 
 ### First time setup
-git config --global user.name "Your_Name" 
+`git config --global user.name "Your_Name" 
 git config --global user.email "Your-Email"
-
+`
 **Pushing stuff to the repo**  
 git init  
 git add <file or folder name>  
