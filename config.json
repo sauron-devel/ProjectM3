@@ -1,0 +1,16 @@
+{
+"setup": 
+	[{
+	"ovrdEnable": 1, 
+	"touchEnable": 1,
+	"dataStoreEnable": 1,
+	"camOrient": 0,
+	"analyticsEnable": 1
+	}], 
+"system": 
+	[{
+	"cameras": 1, 
+	"sensors": 0, 
+	"other": 0
+	}]
+}

@@ -1,0 +1,13 @@
+{
+"tally": 
+	[{
+	"incrOvrd": 0, 
+	"decrOvrd": 0
+	}], 
+"diagRequest": 
+	[{
+	"camera": 1, 
+	"imagStor": 0, 
+	"other": 0
+	}]
+}
