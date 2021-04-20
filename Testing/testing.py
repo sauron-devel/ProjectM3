@@ -1,15 +1,15 @@
 import json
+import time
 
 #INITAL SETUP OF JSON FILE
-
 data={}
 data['tally'] = []
-data['battery']=[]
-data['diagRequest']=[]
+data['battery'] = []
+data['diagRequest'] = []
 
 data['tally'].append({
     'incr': 0,
-    'decr': 0
+    'decr': 0,
 })
 data['battery'].append({
     'powerFlag': 1,
@@ -22,16 +22,15 @@ data['diagRequest'].append({
     'other': 0,
 })
 
-with open('dataflow.txt', 'w') as jsonFile:
+with open('dataflow.json', 'w') as jsonFile:
     json.dump(data, jsonFile)
 
 jsonFile.close()
 
 #CONTINOUS READING OF JSON FILE AND TESTING
 while 1:
-    with open('dataflow.txt') as jsonFile:
-        data = json.load(jsonFile)
-        
+    jsonFile = open('dataflow.json')
+    data = json.load(jsonFile)
 
     for i in data['tally']:
         tempIncr = i['incr']
@@ -41,7 +40,4 @@ while 1:
     print('String? ' + str(test))
 
     jsonFile.close()
-
-
-
-
+    time.sleep(0.1)
