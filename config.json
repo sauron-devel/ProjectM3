@@ -5,12 +5,26 @@
 	"touchEnable": 1,
 	"dataStoreEnable": 1,
 	"camOrient": 0,
-	"analyticsEnable": 1
+	"analyticsEnable": 1,
+	"imgStreamEnable": 1
 	}], 
 "system": 
 	[{
 	"cameras": 1, 
 	"sensors": 0, 
+	"other": 0
+	}], 
+"devices": 
+	[{
+	"cameraName": "String, comma seperated if multiple", 
+	"sensorName": "String, comma seperated if multiple", 
+	"otherName": "String, comma seperated if multiple"
+	}], 
+"allowDiagnostics": 
+	[{
+	"camera": 1, 
+	"imgStore": 1, 
+	"sensors": 1,  
 	"other": 0
 	}]
 }
