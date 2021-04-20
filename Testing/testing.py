@@ -1,33 +1,47 @@
 import json
 
+#INITAL SETUP OF JSON FILE
+
 data={}
 data['tally'] = []
 data['battery']=[]
 data['diagRequest']=[]
 
 data['tally'].append({
-    'incr': str(0),
-    'decr': str(0)
+    'incr': 0,
+    'decr': 0
 })
 data['battery'].append({
-    'powerFlag': str(1),
-    'percentIncr': str(0),
-    'percentDecr': str(0),
+    'powerFlag': 1,
+    'percentIncr': 0,
+    'percentDecr': 0,
 })
 data['diagRequest'].append({
-    'camera': str(1),
-    'imagStor': str(0),
-    'other': str(0),
+    'camera': 1,
+    'imagStor': 0,
+    'other': 0,
 })
 
-with open('dataflow.txt', 'w') as outfile:
-    json.dump(data, outfile)
+with open('dataflow.txt', 'w') as jsonFile:
+    json.dump(data, jsonFile)
 
+jsonFile.close()
 
-with open('dataflow.txt') as json_file:
-    data = json.load(json_file)
+#CONTINOUS READING OF JSON FILE AND TESTING
+while 1:
+    with open('dataflow.txt') as jsonFile:
+        data = json.load(jsonFile)
+        
+
     for i in data['tally']:
-        print('Increment Value: ' + i['incr'])
-        print('Decrement Value: ' + i['decr'])
-        print('')
+        tempIncr = i['incr']
+        tempDecr = i['decr']
+
+    test = isinstance(tempIncr, str)
+    print('String? ' + str(test))
+
+    jsonFile.close()
+
+
+
 
