@@ -1,30 +1,25 @@
 {
-"setup": 
+"camSetup": 
 	[{
-	"ovrdEnable": 1, 
-	"touchEnable": 1,
-	"dataStoreEnable": 1,
-	"camOrient": 0,
-	"analyticsEnable": 1,
-	"imgStreamEnable": 1
+	"lineP1": [500, 500], 
+	"lineP2": [250, 250],
+	"ignoreP1": [50, 50],
+	"ignoreP2": [0, 0]
 	}], 
 "system": 
 	[{
-	"cameras": 1, 
-	"sensors": 0, 
-	"other": 0
+	"startVal": -5,
+	"imgPath": "C:/insert/path/here.png"
 	}], 
 "devices": 
 	[{
-	"cameraName": "String, comma seperated if multiple", 
-	"sensorName": "String, comma seperated if multiple", 
-	"otherName": "String, comma seperated if multiple"
-	}], 
-"allowDiagnostics": 
-	[{
-	"camera": 1, 
-	"imgStore": 1, 
-	"sensors": 1,  
-	"other": 0
+	"cameras": 2, 
+	"sensors": 1, 
+	"deviceInfo": 
+		[
+		{"id": 0, "type": "c", "name": "Camera 1", "ip": "192.168.420.1337"},
+		{"id": 1, "type": "c", "name": "Camera 2", "ip": "192.168.420.1338"},
+		{"id": 2, "type": "s", "name": "Sensor 1", "ip": "192.168.420.1339"}	
+		]	
 	}]
 }

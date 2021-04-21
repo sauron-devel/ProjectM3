@@ -1,0 +1,19 @@
+{
+"errorFlag": false, 
+"tally": 
+	[{
+	"incr": 5, 
+	"decr": 10
+	}],
+"diagnostics": 
+	[{
+	"checkRecv": true
+	"response": "System 2 checked - No errors - Response time 5ms"
+	"respondedAt": "20:51:13"
+	}], 
+"powerSys": 
+	[{
+	"battery": false, 
+	"percentage": "90"
+	}]
+}
