@@ -7,8 +7,8 @@
 	}],
 "diagnostics": 
 	[{
-	"checkRecv": true
-	"response": "System 2 checked - No errors - Response time 5ms"
+	"checkRecv": true,
+	"response": "System 2 checked - No errors - Response time 5ms",
 	"respondedAt": "20:51:13"
 	}], 
 "powerSys": 
