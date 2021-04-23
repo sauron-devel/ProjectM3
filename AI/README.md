@@ -1,4 +1,4 @@
-(To run from terminal)
+### Full object detection and tracking AI (tracking is not AI) system:
 
 - Will need to create a file (this type of file can't be copied to git):  
 `mkfifo ai-out    
