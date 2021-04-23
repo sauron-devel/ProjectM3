@@ -1,8 +1,8 @@
-To run: ./ai_run 
-
 --Will need to create a file (this type of file can't be copied to git)
 `mkfifo ai-out`
 `chmod 666 ai-out`
+
+--To run (in linux terminal): `./ai_run`
 
 --May need to give this file permissions on a new system (`chmod -x ai_run`)
 
