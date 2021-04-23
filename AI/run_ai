@@ -1,9 +1,0 @@
-#!/bin/bash
-
-echo "Running detection and tracking."
-chmod 666 ai-out
-python3 main.py &
-
-echo "Opening pipe for reading output."
-#tail -f ai-out
-python3 read_ai-out.py
