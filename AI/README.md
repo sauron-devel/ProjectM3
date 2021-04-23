@@ -1,4 +1,4 @@
-### Full object detection and tracking AI (tracking is not AI) system:
+### Full object detection and tracking AI* system:
 
 - Will need to create a file (this type of file can't be copied to git):  
 `mkfifo ai-out    
@@ -12,3 +12,4 @@ chmod 666 ai-out`
 
 - Once the system is running, run `ai-out_read.py` in another terminal to see the live metadata output, this is how the use case functions (rest of the backend) would read in the data.
 
+\*the tracking is not AI
