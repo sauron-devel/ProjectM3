@@ -7,10 +7,14 @@ chmod 666 ai-out
 ```  
 
 - To run (in linux terminal):  
-`./ai_run`
+```
+./ai_run
+```
 
 - May need to give this file permissions on a new system:  
-`chmod -x ai_run`
+```
+chmod -x ai_run
+```
 
 - Once the system is running, run `ai-out_read.py` in another terminal to see the live metadata output, this is how the use case functions (rest of the backend) would read in the data.
 
