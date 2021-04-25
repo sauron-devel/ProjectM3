@@ -6,9 +6,9 @@ from math import exp
 
 #~Tracker globals
 TRACKER_OBJECTS = {}
-TRACK_SUCCESS_THRES = 4
+TRACK_SUCCESS_THRES = 5
 TRACK_FAIL_THRES = 2
-IOU_THRES = 0.3
+IOU_THRES = 0.4
 
 #~For detection vs tracking comparison of bounding boxes (intersection over union)
 def IoU(box_a,box_b):
@@ -38,8 +38,8 @@ def update_measurement_noise(curr_det, other_dets, frame_size):
 
     x = (curr_det[2] - curr_det[0]) * (curr_det[3] - curr_det[1])
     x = (x/(frame_size[0]*frame_size[1])) * 100
-    meas_noise = float(0.110099+3.529703659*(10**(-43))*exp(0.980789**x))
-    
+    meas_noise = 1612572 + (-0.06851509-1612572)/(1+(x/24854.25)**2.208623)
+
     base_point = (int((curr_det[2] - curr_det[0])/2), curr_det[3])
     box_width = curr_det[2] - curr_det[0]
     print("after calc", meas_noise, base_point, box_width)
