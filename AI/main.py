@@ -50,7 +50,7 @@ def main():
         detections = objectdetector.model_inference(sess, frame, det_graph, labels)        
         
         #~ Track these detections
-        tracked_detections = tracking_handler(detections)
+        tracked_detections = tracking_handler(detections, FRAME_INPUT_DIMS)
 
         #~ Data transfer function
         write_data(tracked_detections)

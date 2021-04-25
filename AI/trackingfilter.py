@@ -52,10 +52,13 @@ class PredictionFilter():
 
         # Possible to do live velocity mapping, check accuracy of movement bbox maps
         # Note- is noise in det vs track independent? when more people, need more precision
-        self.noise_var = 0.1
-        self.noise = Q_discrete_white_noise(dim=2, dt=self.dt, var=self.noise_var)
-        self.Q = linalg.block_diag(self.noise, self.noise, 
-                                   self.noise, self.noise)
+        self.noise_var1 = 0.1
+        self.noise_var2 = 0.01
+        self.noise1 = Q_discrete_white_noise(dim=2, dt=self.dt, var=self.noise_var1)
+        self.noise2 = Q_discrete_white_noise(dim=2, dt=self.dt, var=self.noise_var2)
+
+        self.Q = linalg.block_diag(self.noise1, self.noise2, 
+                                   self.noise2, self.noise1)
         
         #PROCESS NOISE COVARIANCE MATRIX --is manipulated during tracking
 
@@ -105,7 +108,7 @@ class PredictionFilter():
         # to about 1 pixel for highly accurate models, up to 10-20 pixels for weaker
         # models with minor detection fluctuations. I'll start with 1.
 
-        self.meas_noise = 1e-3
+        self.meas_noise = 1e-2
         self.R = np.diag(self.meas_noise*np.ones(4))
 
         # MEASUREMENT NOISE MATRIX --can be updated on measurement
@@ -127,21 +130,22 @@ class PredictionFilter():
         
         #  MEASUREMENT VECTOR X: [cx, cy, w, h, v1(0), v2(0), v3(0), v4(0)]
         
-    def update_id(self, curr_highest_id, TRACKER_OBJECTS):
+    #*{...CHECK IF THIS FUNCTION IS DOING THE RIGHT THING}
+    def update_id(self, TRACKER_OBJECTS):
         #~ IDs range from 0 to 99, == keys in TRACKER_OBJECTS, assign
         #~ new IDs by free values in this range, prioritising smallest.
-        if curr_highest_id < TRACKER_LIMIT-1:
-            self.ID = curr_highest_id + 1
-        elif curr_highest_id == TRACKER_LIMIT -1:
-            for i in range(TRACKER_LIMIT):
-                if i not in TRACKER_OBJECTS.keys():
-                    self.ID = i
-                    curr_highest_id = i
-                    return self.ID, curr_highest_id
-            
-        #~ Returns None if tracker list full
-        return self.ID, curr_highest_id
-            
+        
+        # If there is nothing in TRACKER_OBJECTS, this ID will be 0
+        if len(TRACKER_OBJECTS) == TRACKER_LIMIT:
+            self.ID = None
+        if len(TRACKER_OBJECTS) == 0: 
+            self.ID = 0 
+        else: 
+            # then the current ID is the highest ID + 1 (will be unused)
+            self.ID = max(TRACKER_OBJECTS.keys()) + 1       
+
+        return self.ID
+
     def initialise_state_vector_X(self, bbox):
         #~ Assume a constant velocity model and initialise with v=0
         #~ Convert bbox state to Kalman filter state: [x1,y1,x2,y2...

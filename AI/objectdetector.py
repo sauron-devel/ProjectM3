@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow.compat.v1 as tf
+import math
 
-DET_SCORE_THRES = 0.2
+DET_SCORE_THRES = 0.65
 
 class InitModel:
     def __init__(self, INF_GRAPH, LABELMAP):
