@@ -1,52 +1,48 @@
 import json
 import time
 import logging
+from logEntryCreate import logEntryCreate
 
 dataList = [0 for i in range(4)]
 dataInt = [0 for i in range(8)]
 dataStr = [0 for i in range(4)]
-dataBool = [0 for i in range(7)]
-errorFound = False
+dataBool = [0 for i in range(8)]
+logLevel = 0
 logging.basicConfig(filename = 'log.txt', filemode = 'a', format = '%(asctime)s - %(levelname)s - %(message)s')
-
-def errorCreate(val, place, errorCode):
-    place = placeOfError(place, errorCode)
-    if errorCode == 1:
-        logging.error("'%s' in %s value, should be a <class 'int'>, is actually %s", val, place, str(type(val)))
-        return
-    if errorCode == 2:
-        logging.error("'%s' in %s value, should be a <class 'bool'>, is actually %s", val, place, str(type(val)))
-        return
-
-def placeOfError(place, errorCode):
-    if errorCode == 1:    
-        if place == 0:
-            return 'startVal'
-        elif place == 1:
-            return 'cameras'
-        elif place == 2:
-            return 'sensors'
-        elif place == 3:
-            return 'deviceCheckID'
-        elif place == 4:
-            return 'timeSaved'
-        elif place == 5:
-            return 'Incr'
-        elif place == 6:
-            return 'Decr'
-        elif place == 7:
-            return 'Percentage'
-
 
 #CONTINOUS READING OF JSON FILE AND TESTING
 while 1:
-    jsonFile1 = open('config.json')
-    jsonFile2 = open('FrontToBack.json')
-    jsonFile3 = open('BackToFront.json')
-    rawData1 = json.load(jsonFile1)
-    rawData2 = json.load(jsonFile2) 
-    rawData3 = json.load(jsonFile3)
-    errorFound = False
+    try:
+        jsonFile1 = open('config.json')
+    except:
+        logEntryCreate('config.json', 0, 0)
+
+    try:
+        jsonFile2 = open('FrontToBack.json')
+    except:
+        logEntryCreate('FrontToBack.json', 0, 0) 
+
+    try:
+        jsonFile3 = open('BackToFront.json')
+    except:
+        logEntryCreate('BackToFront.json', 0, 0) 
+    
+    try:
+        rawData1 = json.load(jsonFile1)
+    except:
+        logEntryCreate('config.json', 0, 1)
+        
+    try:
+        rawData2 = json.load(jsonFile2)
+    except:
+        logEntryCreate('FrontToBack.json', 0, 1) 
+
+    try:
+        rawData3 = json.load(jsonFile3)
+    except:
+        logEntryCreate('BackToFront.json', 0, 1) 
+
+    errorFound = 0
 
     #Loading data into variables
 
@@ -85,38 +81,59 @@ while 1:
         dataInt[6] = i['decr']
 
     for i in rawData3['diagnostics']:
-        dataBool[5] = i['checkRecv']
+        dataBool[6] = i['checkRecv']
         dataStr[2] = i['response']
         dataStr[3] = i['respondedAt']
 
     for i in rawData3['powerSys']:
-        dataBool[6] = i['battery']
+        dataBool[7] = i['battery']
         dataInt[7] = i['percentage']
-
 
     #Testing
     
     listIncr = 0
     for i in dataInt: 
         if not type(i) == int:
-            errorCreate(i, listIncr, 1)
-            errorFound = True
+            logEntryCreate(i, listIncr, 2)
+            logLevel = 1
         listIncr += 1
 
     listIncr = 0
     for i in dataBool:
         if not type(i) == bool:
-            errorCreate(i, listIncr, 2)
-            errorFound = True
+            logEntryCreate(i, listIncr, 3)
+            logLevel = 1
         listIncr += 1
 
+    listIncr = 0
+    for i in dataStr:
+        if not type(i) == str:
+            logEntryCreate(i, listIncr, 4)
+            logLevel = 1
+        listIncr += 1
+
+    listIncr = 0
+    for i in dataList:
+        if not type(i) == list:
+            logEntryCreate(i, listIncr, 5)
+            logLevel = 1
+        if (not len(i) == 2) & (type(i) == list):
+            logEntryCreate(i, listIncr, 6)
+            logLevel = 1
+        if (len(i) == 2):
+            for j in i:
+                if not type(j) == int:
+                    logEntryCreate(j, listIncr, 7)
+                    logLevel = 1
+        listIncr += 1
+    
     jsonFile1.close()
     jsonFile2.close()
     jsonFile3.close()
     time.sleep(0.5) 
 
     #Refresh and clean the log file
-    if errorFound == True:
+    if not logLevel == 0:
         with open("log.txt", "w") as logFile:
             logFile.truncate(0)
 
