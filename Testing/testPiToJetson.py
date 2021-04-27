@@ -3,7 +3,7 @@ import time
 import logging
 from logEntryCreate import logEntryCreate
 
-dataList = [0 for i in range(4)]
+dataList = []
 dataInt = [0 for i in range(8)]
 dataStr = [0 for i in range(4)]
 dataBool = [0 for i in range(8)]
@@ -23,9 +23,9 @@ while 1:
         logEntryCreate('FrontToBack.json', 0, 0) 
 
     try:
-        jsonFile3 = open('BackToFront.json')
+        jsonFile3 = open('BacktoFront.json')
     except:
-        logEntryCreate('BackToFront.json', 0, 0) 
+        logEntryCreate('BacktoFront.json', 0, 0) 
     
     try:
         rawData1 = json.load(jsonFile1)
@@ -46,21 +46,20 @@ while 1:
 
     #Loading data into variables
 
-    for i in rawData1['camSetup']:
-        dataList[0] = i['lineP1']
-        dataList[1] = i['lineP2']
-        dataList[2] = i['ignoreP1']
-        dataList[3] = i['ignoreP2']
+    #
+    for i in rawData1['camSetup'][0]:
+        dataList.append(rawData1['camSetup'][0][i])
+    
+    #
+    dataInt[0] = rawData1['system'][0]['startVal']
+    dataStr[0] = rawData1['system'][0]['imgPath']
 
-    for i in rawData1['system']:
-        dataInt[0] = i['startVal']
-        dataStr[0] = i['imgPath']
+    #
+    dataInt[1] = rawData1['devices'][0]['cameras']
+    dataInt[2] = rawData1['devices'][0]['sensors']
+    dataDict = rawData1['devices'][0]['deviceInfo']
 
-    for i in rawData1['devices']:
-        dataInt[1] = i['cameras']
-        dataInt[2] = i['sensors']
-        dataDict = i['deviceInfo']
-
+    #! carry on from here
     dataBool[0] = rawData2['errorFlag']
     dataBool[1] = rawData2['programStop']
     dataBool[2] = rawData2['configChanged']
@@ -90,7 +89,6 @@ while 1:
         dataInt[7] = i['percentage']
 
     #Testing
-    
     listIncr = 0
     for i in dataInt: 
         if not type(i) == int:
