@@ -1,7 +1,5 @@
 import time
 import cv2
-from threading import Thread
-from queue import Queue
 
 class cv_VideoRead:
     def __init__(self,path):
@@ -22,16 +20,18 @@ class cv_VideoRead:
             self.running = False
 
     def get(self):
-        while(self.ok == False):
-            self.ok, self.grab = self.cap.read()
-            if self.ok:
+        while(True):
+            if self.running:
+                self.ok, self.grab = self.cap.read()
                 self.tries = 0
                 self.ok = False
                 return self.grab
             else:
                 self.tries += 1
-                print("[MESSAGE] Frame could not be grabbed. Retrying... ({})".format(str(self.tries)))
                 self.cap = self.start()
+                print("[MESSAGE] Frame could not be grabbed. Retrying... ({})".format(str(self.tries)))
+                if not self.running:
+                    self.stop()
             
             if self.tries > 15:
                 self.stopped = True

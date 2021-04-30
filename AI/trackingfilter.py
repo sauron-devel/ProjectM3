@@ -3,6 +3,8 @@ from filterpy.common import Q_discrete_white_noise
 from numpy.testing._private.utils import measure
 from scipy import linalg
 
+SUCCESS_THRES_DEFAULT = 5
+FAIL_THRES_DEFAULT = 2
 TRACKER_LIMIT = 100
 
 class PredictionFilter():
@@ -17,6 +19,10 @@ class PredictionFilter():
         self.CLASS_ID = 0
 
         #~ OK: Number of consecutive matched runs, EMPTY: Number of consecutive unmatched runs
+        #~ Making the fail and success thres specific to the tracker 
+        self.SUCCESS_THRES = SUCCESS_THRES_DEFAULT #how many times the tracker has to succeed to appear 4-6 range
+        self.FAIL_THRES = FAIL_THRES_DEFAULT #how many times the tracker can miss without losing 1-3 range
+
         self.OK = 0
         self.EMPTY = 0
 
@@ -25,7 +31,7 @@ class PredictionFilter():
         self.X = [] #~ State vector X*
         self.Z = [] #~ Measurement vector Z*
 
-        self.dt = 0.1
+        self.dt = 0.05
 
         #~ State transition matrix F initialisation
         #  This is used to update covariance and measurement matrices based on 
@@ -52,8 +58,8 @@ class PredictionFilter():
 
         # Possible to do live velocity mapping, check accuracy of movement bbox maps
         # Note- is noise in det vs track independent? when more people, need more precision
-        self.noise_var1 = 0.1
-        self.noise_var2 = 0.01
+        self.noise_var1 = 0.01
+        self.noise_var2 = 0.1
         self.noise1 = Q_discrete_white_noise(dim=2, dt=self.dt, var=self.noise_var1)
         self.noise2 = Q_discrete_white_noise(dim=2, dt=self.dt, var=self.noise_var2)
 
@@ -108,7 +114,7 @@ class PredictionFilter():
         # to about 1 pixel for highly accurate models, up to 10-20 pixels for weaker
         # models with minor detection fluctuations. I'll start with 1.
 
-        self.meas_noise = 1e-2
+        self.meas_noise = 1e-3
         self.R = np.diag(self.meas_noise*np.ones(4))
 
         # MEASUREMENT NOISE MATRIX --can be updated on measurement
@@ -197,7 +203,7 @@ class PredictionFilter():
         self.X = (X_pred + np.dot(K_gain,(self.Z - np.dot(self.H,X_pred)))).astype(int)
         
         # P(t) = (K.H).P(t)
-        self.P =  np.dot(K_gain, self.H).dot(self.P)
+        self.P = -(np.dot(K_gain, self.H)).dot(self.P)
 
         #Then, X(t-1) = X(t) and P(t-1) = P(t) and the system can be re-evaluated
 

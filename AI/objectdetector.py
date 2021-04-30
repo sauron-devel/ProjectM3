@@ -1,8 +1,10 @@
+import math
+import cv2
 import numpy as np
 import tensorflow.compat.v1 as tf
-import math
 
-DET_SCORE_THRES = 0.65
+DET_SCORE_THRES = 0.7 #0.6-0.75 range
+NMS_THRES = 0.8 #0.6-0.8 range
 
 class InitModel:
     def __init__(self, INF_GRAPH, LABELMAP):
@@ -23,9 +25,10 @@ class InitModel:
                     if 'id' in line:
                         class_id = int(line.replace("id: ","").replace("\n","").strip(" "))
                     if 'display_name' in line:
-                        displayname = "TYPE:" + str(line.replace("display_name: ","").replace("\n","").strip(" "))
+                        displayname = str(line.replace("display_name: ","").replace("\n","").strip(" ").strip("\""))
                         labels[class_id] = displayname
 
+        print(labels)
         return labels
 
     #~ Import the graph by serialising the binary .pb file with tensorflow functions
@@ -42,7 +45,23 @@ class InitModel:
         return self.sess, detection_graph
 
 
+def non_max_suppression(detections, score_thr, nms_thr):
+    detections = np.array(detections)
 
+    boxes = np.ndarray.tolist(detections[:,:4])
+    scores = np.ndarray.tolist(detections[:,5])
+
+    indexes = cv2.dnn.NMSBoxes(boxes, scores, score_thr, nms_thr) 
+    
+    det_keep = []
+
+    for i in indexes:
+        i = i[0]
+        det_keep.append(i)
+
+    
+    detections = np.take(detections, (det_keep), axis=0)
+    return detections
 
 def model_inference(sess, image_np, graph, labels):
     image_np_expanded = np.expand_dims(image_np, axis=0)
@@ -66,11 +85,17 @@ def model_inference(sess, image_np, graph, labels):
                 box_bx = int(boxes[0][i][3]*image_np.shape[1])
                 box_by = int(boxes[0][i][2]*image_np.shape[0])
                 
-                coords = [box_ux,box_uy,box_bx,box_by,classes[0][i].astype(int)]
+                coords = [box_ux,box_uy,box_bx,box_by,classes[0][i].astype(int),float(scores[0][i])]
 
                 try: detections.append(coords) 
                 except: pass
 
-    return np.array(detections).astype(int)
+    #NMS for overlapping bounding boxes
+    if len(detections) > 0:
+        detections = non_max_suppression(detections, score_thr=DET_SCORE_THRES, nms_thr=NMS_THRES)[:,:5] #remove scores
+    else:
+        detections = np.array(detections)
+
+    return detections.astype(int)
 
 
