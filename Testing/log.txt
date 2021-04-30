@@ -1,2 +1,2 @@
-2021-04-30 13:59:56,655 - ERROR - File path 'C:/insert/path/here.png' does not exist
-2021-04-30 13:59:56,655 - ERROR - Data corrupted from LoRa Board, error value 1000
+2021-04-30 14:15:36,126 - ERROR - File path 'C:/insert/path/here.png' does not exist
+2021-04-30 14:15:36,126 - ERROR - Data corrupted from LoRa Board, error value 1000

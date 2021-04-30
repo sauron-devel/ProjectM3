@@ -31,6 +31,12 @@ while 1:
         logEntryCreate('BackToFront.json', 0, 0) 
     
     try:
+        jsonFile4 = open("LoRatoBack.json")
+    except:
+        logEntryCreate('LoRatoBack.json', 0, 0) 
+
+    #
+    try:
         rawData1 = json.load(jsonFile1)
     except:
         logEntryCreate('config.json', 0, 1)
@@ -44,6 +50,11 @@ while 1:
         rawData3 = json.load(jsonFile3)
     except:
         logEntryCreate('BackToFront.json', 0, 1) 
+    
+    try:
+        rawData4 = json.load(jsonFile4)
+    except:
+        logEntryCreate('LoRatoBack.json', 0, 1) 
 
     errorFound = 0
 
@@ -126,20 +137,17 @@ while 1:
         logLevel = 1
 
     # LORA ERROR DETECTION
-    inputFile = open("LoRatoBack.json")
-    jsonFile = json.load(inputFile)
-
     divisor = []
     divisorStr = ""
     rawDataStr = ""
 
-    base64Message = jsonFile["payload_raw"]
+    base64Message = rawData4["payload_raw"]
     base64Bytes = base64Message.encode('utf-8')
     rawDataBytes = base64.decodebytes(base64Bytes)
     rawData = list("".join(["{:08b}".format(x) for x in rawDataBytes]))
 
 
-    if jsonFile["metadata"]["coding_rate"] == "4/5":
+    if rawData4["metadata"]["coding_rate"] == "4/5":
         ammountOfRedun = int(len(rawData)/5)
         startOfDiv = len(rawData) - ammountOfRedun 
         for i in range(startOfDiv, len(rawData)):
@@ -157,6 +165,7 @@ while 1:
     jsonFile1.close()
     jsonFile2.close()
     jsonFile3.close()
+    jsonFile4.close()
     time.sleep(0.5) 
 
     #Refresh and clean the log file
