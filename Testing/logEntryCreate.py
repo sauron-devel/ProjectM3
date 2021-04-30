@@ -8,22 +8,21 @@ def logEntryCreate(val, placeNum, logCode):
         logging.critical("%s file failed to load, not a python dictionary", val)
     if logCode == 2:
         logging.error("'%s' in %s value, should be a <class 'int'> is actually %s", val, place, str(type(val)))
-        return
     if logCode == 3:
         logging.error("'%s' in %s value, should be a <class 'bool'> is actually %s", val, place, str(type(val)))
-        return
     if logCode == 4:
         logging.error("'%s' in %s value, should be a <class 'str'> is actually %s", val, place, str(type(val)))
-        return
     if logCode == 5:
         logging.error("'%s' in %s value, should be a <class 'list'> is actually %s", val, place, str(type(val)))
-        return
     if logCode == 6:
         logging.error("'%s' in %s value, isn't a correct (x,y) coordinate", val, place)
-        return
     if logCode == 7:
         logging.error("'%s' in %s value, value in the (x,y) corrdinate is not <class 'int'> is actually %s", val, place, str(type(val)))
-        return
+    if logCode == 8:
+        logging.error("File path '%s' does not exist", val)
+    if logCode == 9:
+        logging.error("Data corrupted from LoRa Board, error value %s", val) 
+    return
 
 def placeOfLog(placeNum, logCode):
     if logCode == 2:    
