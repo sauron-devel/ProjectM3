@@ -1,18 +1,18 @@
 {
 "camSetup": 
-	[{
+	{
 	"lineP1": [500, 500], 
 	"lineP2": [250, 250],
 	"ignoreP1": [50, 50],
 	"ignoreP2": [0, 0]
-	}], 
+	}, 
 "system": 
-	[{
+	{
 	"startVal": -5,
 	"imgPath": "C:/insert/path/here.png"
-	}], 
+	}, 
 "devices": 
-	[{
+	{
 	"cameras": 2, 
 	"sensors": 1, 
 	"deviceInfo": 
@@ -21,5 +21,5 @@
 		{"id": 1, "type": "c", "name": "Camera 2", "ip": "192.168.420.1338"},
 		{"id": 2, "type": "s", "name": "Sensor 1", "ip": "192.168.420.1339"}	
 		]	
-	}]
+	}
 }

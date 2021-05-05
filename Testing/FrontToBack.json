@@ -3,14 +3,14 @@
 "programStop": false,
 "configChanged": true,
 "diagnostics": 
-	[{
+	{
 	"deviceCheckID": 2,
 	"requestedAt": "20:51:12",
 	"responseRecv": false
-	}], 
+	}, 
 "saveData": 
-	[{
+	{
 	"enable": true, 
 	"timeSaved": 5
-	}]
+	}
 }
