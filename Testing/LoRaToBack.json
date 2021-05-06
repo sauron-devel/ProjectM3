@@ -4,7 +4,7 @@
     "hardware_serial":"0004A30B001C3FAF",
     "port": 1,
     "counter": 392,
-    "payload_raw": "AHIIFAQ=",
+    "payload_raw": "AHIIFBQ=",
     "payload_fields": {
         "proximity": 111
     },

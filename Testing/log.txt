@@ -1,1 +1,2 @@
-2021-04-27 14:52:07,315 - ERROR - '5' in timeSaved value, should be a <class 'int'> is actually <class 'str'>
+2021-04-30 14:15:36,126 - ERROR - File path 'C:/insert/path/here.png' does not exist
+2021-04-30 14:15:36,126 - ERROR - Data corrupted from LoRa Board, error value 1000

@@ -1,9 +1,12 @@
+import os
 import json
 import time
 import logging
 from logEntryCreate import logEntryCreate
+import base64
+from errorDetection import crcCheck
+from errorDetection import crcRemainder
 
-dataList = []
 dataInt = [0 for i in range(8)]
 dataStr = [0 for i in range(4)]
 dataBool = [0 for i in range(8)]
@@ -23,10 +26,16 @@ while 1:
         logEntryCreate('FrontToBack.json', 0, 0) 
 
     try:
-        jsonFile3 = open('BacktoFront.json')
+        jsonFile3 = open('BackToFront.json')
     except:
-        logEntryCreate('BacktoFront.json', 0, 0) 
+        logEntryCreate('BackToFront.json', 0, 0) 
     
+    try:
+        jsonFile4 = open("LoRatoBack.json")
+    except:
+        logEntryCreate('LoRatoBack.json', 0, 0) 
+
+    #
     try:
         rawData1 = json.load(jsonFile1)
     except:
@@ -41,54 +50,52 @@ while 1:
         rawData3 = json.load(jsonFile3)
     except:
         logEntryCreate('BackToFront.json', 0, 1) 
+    
+    try:
+        rawData4 = json.load(jsonFile4)
+    except:
+        logEntryCreate('LoRatoBack.json', 0, 1) 
 
     errorFound = 0
 
     #Loading data into variables
-
     #
+    dataList = []
     for i in rawData1['camSetup'][0]:
         dataList.append(rawData1['camSetup'][0][i])
     
-    #
     dataInt[0] = rawData1['system'][0]['startVal']
     dataStr[0] = rawData1['system'][0]['imgPath']
 
-    #
     dataInt[1] = rawData1['devices'][0]['cameras']
     dataInt[2] = rawData1['devices'][0]['sensors']
     dataDict = rawData1['devices'][0]['deviceInfo']
 
-    #! carry on from here
     dataBool[0] = rawData2['errorFlag']
     dataBool[1] = rawData2['programStop']
     dataBool[2] = rawData2['configChanged']
 
-    for i in rawData2['diagnostics']:
-        dataInt[3] = i['deviceCheckID']
-        dataStr[1] = i['requestedAt']
-        dataBool[3] = i['responseRecv']
+    dataInt[3] = rawData2['diagnostics'][0]['deviceCheckID']
+    dataStr[1] = rawData2['diagnostics'][0]['requestedAt']
+    dataBool[3] = rawData2['diagnostics'][0]['responseRecv']
 
-    for i in rawData2['saveData']:
-        dataBool[4] = i['enable']
-        dataInt[4] = i['timeSaved']
+    dataBool[4] = rawData2['saveData'][0]['enable']
+    dataInt[4] = rawData2['saveData'][0]['timeSaved']
 
     dataBool[5] = rawData3['errorFlag']
 
-    for i in rawData3['tally']:
-        dataInt[5] = i['incr']
-        dataInt[6] = i['decr']
+    dataInt[5] = rawData3['tally'][0]['incr']
+    dataInt[6] = rawData3['tally'][0]['decr']
 
-    for i in rawData3['diagnostics']:
-        dataBool[6] = i['checkRecv']
-        dataStr[2] = i['response']
-        dataStr[3] = i['respondedAt']
+    dataBool[6] = rawData3['diagnostics'][0]['checkRecv']
+    dataStr[2] = rawData3['diagnostics'][0]['response']
+    dataStr[3] = rawData3['diagnostics'][0]['respondedAt']
 
-    for i in rawData3['powerSys']:
-        dataBool[7] = i['battery']
-        dataInt[7] = i['percentage']
+    dataBool[7] = rawData3['powerSys'][0]['battery']
+    dataInt[7] = rawData3['powerSys'][0]['percentage']
 
     #Testing
+    
     listIncr = 0
     for i in dataInt: 
         if not type(i) == int:
@@ -124,10 +131,41 @@ while 1:
                     logEntryCreate(j, listIncr, 7)
                     logLevel = 1
         listIncr += 1
-    
+
+    if os.path.exists(dataStr[0]) == False:
+        logEntryCreate(dataStr[0], 0, 8)
+        logLevel = 1
+
+    # LORA ERROR DETECTION
+    divisor = []
+    divisorStr = ""
+    rawDataStr = ""
+
+    base64Message = rawData4["payload_raw"]
+    base64Bytes = base64Message.encode('utf-8')
+    rawDataBytes = base64.decodebytes(base64Bytes)
+    rawData = list("".join(["{:08b}".format(x) for x in rawDataBytes]))
+
+
+    if rawData4["metadata"]["coding_rate"] == "4/5":
+        ammountOfRedun = int(len(rawData)/5)
+        startOfDiv = len(rawData) - ammountOfRedun 
+        for i in range(startOfDiv, len(rawData)):
+            divisor.append(rawData[i])
+
+    for i in range(0, startOfDiv):
+        rawDataStr += rawData[i]
+
+    for i in divisor:
+        divisorStr += i
+
+    if crcCheck(rawDataStr, divisorStr, '0') == False:
+        logEntryCreate(crcRemainder(rawDataStr, divisorStr, '0'), 0, 9)
+
     jsonFile1.close()
     jsonFile2.close()
     jsonFile3.close()
+    jsonFile4.close()
     time.sleep(0.5) 
 
     #Refresh and clean the log file
