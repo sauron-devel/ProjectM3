@@ -5,6 +5,7 @@ from scipy import linalg
 
 SUCCESS_THRES_DEFAULT = 5
 FAIL_THRES_DEFAULT = 2
+
 TRACKER_LIMIT = 100
 
 class PredictionFilter():
@@ -58,7 +59,7 @@ class PredictionFilter():
 
         # Possible to do live velocity mapping, check accuracy of movement bbox maps
         # Note- is noise in det vs track independent? when more people, need more precision
-        self.noise_var1 = 0.01
+        self.noise_var1 = 0.05
         self.noise_var2 = 0.1
         self.noise1 = Q_discrete_white_noise(dim=2, dt=self.dt, var=self.noise_var1)
         self.noise2 = Q_discrete_white_noise(dim=2, dt=self.dt, var=self.noise_var2)
@@ -178,7 +179,6 @@ class PredictionFilter():
         self.Z = msr_vector
 
     def KF_predict_and_track(self):
-
         #~ Predict next time step: Deriving state predictions using the state transition matrix
 
         # X(t) = F.X(t-1)
