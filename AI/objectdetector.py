@@ -3,8 +3,8 @@ import cv2
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-DET_SCORE_THRES = 0.7 #0.6-0.75 range
-NMS_THRES = 0.8 #0.6-0.8 range
+DET_SCORE_THRES = 0.77 #0.6-0.75 range #0.75
+NMS_THRES = 0.77 #0.6-0.8 range #0.70
 
 class InitModel:
     def __init__(self, INF_GRAPH, LABELMAP):
@@ -22,13 +22,11 @@ class InitModel:
         labels = {}
         with open(self.LABELMAP, "r") as fp:
             for line in fp:
-                    if 'id' in line:
+                    if 'id:' in line:
                         class_id = int(line.replace("id: ","").replace("\n","").strip(" "))
-                    if 'display_name' in line:
+                    if 'display_name:' in line:
                         displayname = str(line.replace("display_name: ","").replace("\n","").strip(" ").strip("\""))
                         labels[class_id] = displayname
-
-        print(labels)
         return labels
 
     #~ Import the graph by serialising the binary .pb file with tensorflow functions
@@ -75,7 +73,7 @@ def model_inference(sess, image_np, graph, labels):
 
     detections = []
     for i in range(len(classes[0])):
-        if scores[0][i] > DET_SCORE_THRES:
+        if scores[0][i] > DET_SCORE_THRES:#
             if classes[0][i].astype(int) == 1:
                 #~ Load label string for the detection
                 label = str(labels[classes[0][i].astype(int)])

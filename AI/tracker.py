@@ -8,9 +8,9 @@ from math import exp,sqrt
 TRACKER_OBJECTS = {}
 IOU_THRES = 0.3 #higher = tighter requirements for matching track->det 0.3-0.6 range
 BOX_OCCL_RATIO_UPD = 0.6 #higher = earlier occlusion probability 0.4=0.7 range
-BOX_OCCL_RATIO_NEW = 0.2 #likely 0,05-0.02 range
-SUCCESS_THRES_DEFAULT = 5
-FAIL_THRES_DEFAULT = 2
+BOX_OCCL_RATIO_NEW = 0.6 #likely 0,05-0.02 range
+SUCCESS_THRES_DEFAULT = 6
+FAIL_THRES_DEFAULT = 3
 
 #~For detection vs tracking comparison of bounding boxes (intersection over union)
 def IoU(box_a,box_b):
@@ -38,14 +38,13 @@ def IoU_assign(iou_map):
 
 #~ This function updates the measurement noise at tracker update only based on the
 #~ size of the bounding box (size affects noise)
-def update_measurement_noise(curr_det, frame_size):
+def update_measurement_noise(tracker_obj, curr_det, frame_size):
 
     x = (curr_det[2] - curr_det[0]) * (curr_det[3] - curr_det[1])
     x = (x/(frame_size[0]*frame_size[1])) * 100
-    meas_noise = 0.002*1.1**x
-    #meas_noise = 20*0.9**x
-    #meas_noise = 0.9e-3
-    return abs(meas_noise)
+    meas_noise = abs(10*0.002*1.1**x)
+    tracker_obj.meas_noise = meas_noise
+    tracker_obj.R = np.diag(tracker_obj.meas_noise*np.ones(4))
 
 #~ 6th column of the detection list holds an occlusion metric, when this is -1 (heavy chance of occlusion)
 #~ the tracker attempts to track by itself instead of updating with detections    
@@ -60,14 +59,11 @@ def poss_occlusion(curr_det, det_idx, dets, frame_size, BOX_OCCLUSION_RATIO):
     for i in range(len(dets)):
         if i != det_idx:
             oth_base_point = (int((dets[i,2] + dets[i,0])/2), dets[i,3])
-            #print("base point for the compared detection", dets[i,2], dets[i,0])
 
             if abs(base_point[0] - oth_base_point[0]) < box_width:
                 dist = sqrt((base_point[0]-oth_base_point[0])**2 + (base_point[1] - oth_base_point[1])**2)
                 
                 if dist < box_width*BOX_OCCLUSION_RATIO:
-                    #print("box width, distance", box_width, dist, "yes")
-                    #print("chance of occlusion given to", dets[i], curr_det)
                     hold_tracker = True
 
     return hold_tracker
@@ -116,11 +112,11 @@ def assign_trackers(curr_trackers, curr_detections):
         match_idx = IoU_assign(iou_map)
 
         # #*{...
-        # print("ID |      R VAL      |  TRACKER(x-1) COORDS  |  DETECTION(x) COORDS  |  IOU VAL")
-        # for i in range(len(iou_map)):
-        #     for j in range(len(iou_map[i])):
-        #         print(curr_trackers[i,1]," | ",TRACKER_OBJECTS[curr_trackers[i,1]].meas_noise," | ", curr_trackers[i,0], " | ", curr_detections[j,:4], " | ", iou_map[i,j],"")
-        #     print("___________________________________________________________\n")       
+        print("ID |      R VAL      | SUCCESS:FAILURE | TRACKER(x-1) COORDS  |  DETECTION(x) COORDS  |  IOU VAL")
+        for i in range(len(iou_map)):
+            for j in range(len(iou_map[i])):
+                print(curr_trackers[i,1]," | ",TRACKER_OBJECTS[curr_trackers[i,1]].meas_noise," | ", TRACKER_OBJECTS[curr_trackers[i,1]].OK, ":", TRACKER_OBJECTS[curr_trackers[i,1]].EMPTY, " | ", curr_trackers[i,0], " | ", curr_detections[j,:4], " | ", iou_map[i,j],"")
+            print("___________________________________________________________\n")       
         # #*...}
 
         # Check all assignments, if some assignments fall under IOU threshold, remove them
@@ -177,7 +173,7 @@ def create_tracker(det_idx, curr_detections, frame_size):
         del new_tracker_obj
         return False
 
-    new_tracker_obj.meas_noise = update_measurement_noise(detection_coords, frame_size)
+    update_measurement_noise(new_tracker_obj, detection_coords, frame_size)
     new_tracker_obj.CLASS_ID = curr_detections[det_idx,4]
         
     new_tracker_obj.initialise_state_vector_X(detection_coords)
@@ -196,7 +192,7 @@ def update_tracker(match, curr_detections, curr_trackers, frame_size):
     tracker_id = curr_trackers[local_track_idx,1]
 
     tracker_obj = TRACKER_OBJECTS[tracker_id]
-    tracker_obj.meas_noise = update_measurement_noise(detection_coords, frame_size)
+    update_measurement_noise(tracker_obj, detection_coords, frame_size)
     
 
     if poss_occlusion(detection_coords, det_idx, curr_detections, frame_size, BOX_OCCL_RATIO_UPD):
