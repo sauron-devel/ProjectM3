@@ -2,6 +2,7 @@
 "errorFlag": false,
 "programStop": false,
 "configChanged": true,
+"runDiagnostics": false,
 "diagnostics": 
 	{
 	"deviceCheckID": 2,
