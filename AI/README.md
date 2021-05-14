@@ -1,11 +1,5 @@
 ### Full object detection and tracking AI* system:
-
-- Will need to create a file (this type of file can't be copied to git):  
-```
-mkfifo ai-out    
-chmod 666 ai-out
-```  
-
+  
 - To run (in linux terminal):  
 ```
 ./ai_run
@@ -16,10 +10,4 @@ chmod 666 ai-out
 chmod -x ai_run
 ```
 
-- Once the system is running, run: 
-```
-ai-out_read.py
-``` 
-(in another terminal window) to see the live metadata output, this is how the use case functions (rest of the backend) would read in the data.
-
-\* *the tracking is not AI*
+- Changed it so the internal detection handling is sent directly to Backend instead of FIFO pipe.
