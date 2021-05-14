@@ -69,8 +69,10 @@ def model_inference(sess, image_np, graph, labels):
     scores = graph.get_tensor_by_name('detection_scores:0')
     classes = graph.get_tensor_by_name('detection_classes:0')
     num_detections = graph.get_tensor_by_name('num_detections:0')
+    #Load all detections
     (boxes, scores, classes, num_detections) = sess.run([boxes, scores, classes, num_detections],feed_dict={image_tensor: image_np_expanded})
 
+    #Filter all detections
     detections = []
     for i in range(len(classes[0])):
         if scores[0][i] > DET_SCORE_THRES:#

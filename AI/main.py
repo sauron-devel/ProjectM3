@@ -11,6 +11,9 @@ import visualiser
 from objectdetector import InitModel
 from tracker import tracking_handler
 
+from personcounter import backend
+
+
 #*TEST BLOCK {...} 
 
 #~Camera feed globals
@@ -19,27 +22,15 @@ VIDEO_SOURCE = "testvideos/stockvideo6.webm" #0
 FRAME_INPUT_DIMS = (720,405)
 
 #~Object detection inference globals
-#INF_GRAPH='faster_rcnn_resnet50_coco_2018_01_28/frozen_inference_graph.pb'
-#INF_GRAPH='faster_rcnn_inception_resnet_v2_atrous_oid_2018_01_28/frozen_inference_graph.pb' too slow
-#INF_GRAPH='ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb'
-#INF_GRAPH='ssd_mobilenet_v1_fpn_shared_box_predictor_640x640_coco14_sync_2018_07_03/frozen_inference_graph.pb'
 #INF_GRAPH='ssd_inception_v2_coco_2018_01_28/frozen_inference_graph.pb' #*det_thres=0.35, nms_thres=0.8, tracker:0.2,0.7,0.2,5,4, R scalar *100 (much more noise)
-#INF_GRAPH = 'faster_rcnn_nas_coco_2018_01_28/frozen_inference_graph.pb'
-#INF_GRAPH = 'ssd_resnet101_v1_fpn_shared_box_predictor_oid_512x512_sync_2019_01_20/frozen_inference_graph.pb'
-#INF_GRAPH = 'faster_rcnn_inception_resnet_v2_atrous_oid_v4_2018_12_12/frozen_inference_graph.pb'
-#INF_GRAPH = 'ssd_mobilenet_v2_oid_v4_2018_12_12/frozen_inference_graph.pb'
 INF_GRAPH = 'inceptionv2frcnn/frozen_inference_graph.pb' #*det_thres=0.75, nms_thres=0.75, tracker:0.3,0.6,0.5,5,2
+
 LABELMAP='labelmap.pbtxt'
 
-#~Data transfer pipe 
-OUTPUT_FILE_ADDR = 'ai-out'
-
-def write_data(data):
-    FIFO = open(OUTPUT_FILE_ADDR, 'w')
+def write_data(frame, data):
     timestamp = str(datetime.now())
-    FIFO.write(timestamp + ">> " + str(data) + "\n")
-    FIFO.flush()
-    FIFO.close()
+    output_string = timestamp + ">> " + str(data) + "\n"
+    return backend(frame,output_string)
 
 def main():
     #~ Initialise deep learning model to detect objects
@@ -48,7 +39,7 @@ def main():
     sess,det_graph = modelinfo.graph_import()
 
     #~ Initialise video stream
-    frame_count = 0
+    frame_count = 0 #debug
     stream = videostream.set_input_feed(VIDEO_SOURCE)
     
     stream.start()
@@ -63,30 +54,37 @@ def main():
 
         #~ Get detections off the current frame
         detections = objectdetector.model_inference(sess, frame, det_graph, labels)        
-        
         print("Number of initial detections: ", len(detections))
 
         #~ Track these detections 
         tracked_detections = tracking_handler(detections, FRAME_INPUT_DIMS)
-
         print("Number of currently tracked detections: ", len(tracked_detections))
+
         #~ Data transfer function
-        write_data(tracked_detections)
+        frame,threshold,counter = write_data(frame, tracked_detections)
 
         #~ Calculate FPS
         fps_b = time.time() 
         fps = str(round(1/(fps_b - fps_a),2))
 
-        #~ Display function for the bounding boxes with labels and person ID
+        #~ Display debug function for the bounding boxes with labels and person ID
         # To show only detections add optional argument SHOW="DETECTED_ONLY"
-        # or for trackers "TRACKED_ONLY", to show nothing add empty string "" or "NONE"
-        frame = visualiser.show(frame, [detections,tracked_detections], labels, fps, SHOW="ALL")
+        # or for trackers "TRACKED_ONLY", or for only counter, "COUNTER_ONLY",
+        # to show nothing add empty string "" or "NONE"
+        frame = visualiser.show(
+            frame, 
+            [detections,tracked_detections], 
+            labels, 
+            fps, 
+            frame_count,
+            threshold,
+            counter, 
+            SHOW="ALL")
 
         #~ Show frame
         cv2.imshow("debug feed", frame)
 
-        
-        frame_count += 1
+        frame_count += 1 #debug
         
         if cv2.waitKey(25) and 0xFF == ord('q'):  #put back
             break
