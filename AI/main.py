@@ -11,6 +11,7 @@ import visualiser
 from objectdetector import InitModel
 from tracker import tracking_handler
 
+sys.path.append("../Backend/")
 from personcounter import backend
 
 
