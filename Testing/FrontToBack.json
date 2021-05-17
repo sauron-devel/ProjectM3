@@ -2,7 +2,6 @@
 "errorFlag": false,
 "programStop": false,
 "configChanged": true,
-"runDiagnostics": false,
 "diagnostics": 
 	{
 	"deviceCheckID": 2,
@@ -11,7 +10,7 @@
 	}, 
 "saveData": 
 	{
-	"enable": true, 
+	"enable": "true", 
 	"timeSaved": 5
 	}
 }

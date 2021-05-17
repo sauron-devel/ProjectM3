@@ -14,85 +14,93 @@ logLevel = 0
 logging.basicConfig(filename = 'log.txt', filemode = 'a', format = '%(asctime)s - %(levelname)s - %(message)s')
 
 #CONTINOUS READING OF JSON FILE AND TESTING
-while 1:
+while 1:    
+    errorFound = 0
     try:
         jsonFile1 = open('config.json')
     except:
         logEntryCreate('config.json', 0, 0)
+        errorFound = 1
 
     try:
         jsonFile2 = open('FrontToBack.json')
     except:
-        logEntryCreate('FrontToBack.json', 0, 0) 
+        logEntryCreate('FrontToBack.json', 0, 0)
+        errorFound = 1 
 
     try:
         jsonFile3 = open('BackToFront.json')
     except:
-        logEntryCreate('BackToFront.json', 0, 0) 
+        logEntryCreate('BackToFront.json', 0, 0)
+        errorFound = 1 
     
     try:
         jsonFile4 = open("LoRatoBack.json")
     except:
-        logEntryCreate('LoRatoBack.json', 0, 0) 
-
+        logEntryCreate('LoRatoBack.json', 0, 0)
+        errorFound = 1
     #
     try:
         rawData1 = json.load(jsonFile1)
     except:
         logEntryCreate('config.json', 0, 1)
+        errorFound = 1
         
     try:
         rawData2 = json.load(jsonFile2)
     except:
-        logEntryCreate('FrontToBack.json', 0, 1) 
+        logEntryCreate('FrontToBack.json', 0, 1)
+        errorFound = 1 
 
     try:
         rawData3 = json.load(jsonFile3)
     except:
-        logEntryCreate('BackToFront.json', 0, 1) 
+        logEntryCreate('BackToFront.json', 0, 1)
+        errorFound = 1 
     
     try:
         rawData4 = json.load(jsonFile4)
     except:
-        logEntryCreate('LoRatoBack.json', 0, 1) 
+        logEntryCreate('LoRatoBack.json', 0, 1)
+        errorFound = 1 
 
-    errorFound = 0
+
 
     #Loading data into variables
-    #
-    dataList = []
-    for i in rawData1['camSetup'][0]:
-        dataList.append(rawData1['camSetup'][0][i])
-    
-    dataInt[0] = rawData1['system'][0]['startVal']
-    dataStr[0] = rawData1['system'][0]['imgPath']
 
-    dataInt[1] = rawData1['devices'][0]['cameras']
-    dataInt[2] = rawData1['devices'][0]['sensors']
-    dataDict = rawData1['devices'][0]['deviceInfo']
+    dataList = []
+    for i in rawData1['camSetup']:
+        dataList.append(rawData1['camSetup'][i])
+    
+    dataInt[0] = rawData1['system']['startVal']
+    dataStr[0] = rawData1['system']['imgPath']
+
+    dataInt[1] = rawData1['devices']['cameras']
+    dataInt[2] = rawData1['devices']['sensors']
+    dataDict = rawData1['devices']['deviceInfo']
 
     dataBool[0] = rawData2['errorFlag']
     dataBool[1] = rawData2['programStop']
     dataBool[2] = rawData2['configChanged']
 
-    dataInt[3] = rawData2['diagnostics'][0]['deviceCheckID']
-    dataStr[1] = rawData2['diagnostics'][0]['requestedAt']
-    dataBool[3] = rawData2['diagnostics'][0]['responseRecv']
+    dataInt[3] = rawData2['diagnostics']['deviceCheckID']
+    dataStr[1] = rawData2['diagnostics']['requestedAt']
+    dataBool[3] = rawData2['diagnostics']['responseRecv']
 
-    dataBool[4] = rawData2['saveData'][0]['enable']
-    dataInt[4] = rawData2['saveData'][0]['timeSaved']
+    dataBool[4] = rawData2['saveData']['enable']
+    dataInt[4] = rawData2['saveData']['timeSaved']
 
     dataBool[5] = rawData3['errorFlag']
 
-    dataInt[5] = rawData3['tally'][0]['incr']
-    dataInt[6] = rawData3['tally'][0]['decr']
+    dataInt[5] = rawData3['tally']['incr']
+    dataInt[6] = rawData3['tally']['decr']
 
-    dataBool[6] = rawData3['diagnostics'][0]['checkRecv']
-    dataStr[2] = rawData3['diagnostics'][0]['response']
-    dataStr[3] = rawData3['diagnostics'][0]['respondedAt']
+    dataBool[6] = rawData3['diagnostics']['checkRecv']
+    dataStr[2] = rawData3['diagnostics']['response']
+    dataStr[3] = rawData3['diagnostics']['respondedAt']
 
-    dataBool[7] = rawData3['powerSys'][0]['battery']
-    dataInt[7] = rawData3['powerSys'][0]['percentage']
+    dataBool[7] = rawData3['powerSys']['battery']
+    dataInt[7] = rawData3['powerSys']['percentage']
 
     #Testing
     
@@ -146,7 +154,6 @@ while 1:
     rawDataBytes = base64.decodebytes(base64Bytes)
     rawData = list("".join(["{:08b}".format(x) for x in rawDataBytes]))
 
-
     if rawData4["metadata"]["coding_rate"] == "4/5":
         ammountOfRedun = int(len(rawData)/5)
         startOfDiv = len(rawData) - ammountOfRedun 
@@ -172,4 +179,3 @@ while 1:
     if not logLevel == 0:
         with open("log.txt", "w") as logFile:
             logFile.truncate(0)
-

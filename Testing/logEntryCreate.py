@@ -17,7 +17,7 @@ def logEntryCreate(val, placeNum, logCode):
     if logCode == 6:
         logging.error("'%s' in %s value, isn't a correct (x,y) coordinate", val, place)
     if logCode == 7:
-        logging.error("'%s' in %s value, value in the (x,y) corrdinate is not <class 'int'> is actually %s", val, place, str(type(val)))
+        logging.error("'%s' in %s value, value in the (x,y) coordinate is not <class 'int'> is actually %s", val, place, str(type(val)))
     if logCode == 8:
         logging.error("File path '%s' does not exist", val)
     if logCode == 9:

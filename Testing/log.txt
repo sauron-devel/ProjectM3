@@ -1,2 +1,5 @@
-2021-04-30 14:15:36,126 - ERROR - File path 'C:/insert/path/here.png' does not exist
-2021-04-30 14:15:36,126 - ERROR - Data corrupted from LoRa Board, error value 1000
+2021-05-12 17:28:13,659 - ERROR - '1.6' in sensors value, should be a <class 'int'> is actually <class 'float'>
+2021-05-12 17:28:13,659 - ERROR - 'true' in enable value, should be a <class 'bool'> is actually <class 'str'>
+2021-05-12 17:28:13,659 - ERROR - '[500, 500, 5]' in lineP1 value, isn't a correct (x,y) coordinate
+2021-05-12 17:28:13,659 - ERROR - File path 'C:/insert/path/here.png' does not exist
+2021-05-12 17:28:13,660 - ERROR - Data corrupted from LoRa Board, error value 1000

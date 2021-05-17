@@ -1,3 +1,4 @@
+#cyclic redundancy check
 def crcRemainder(message, divisor, initFiller):
     curShift = 0
     divisor = divisor.lstrip('0')
@@ -24,4 +25,3 @@ def crcCheck(message, divisor, initFiller):
             messagePadded[curShift + i] \
             = str(int(divisor[i] != messagePadded[curShift + i]))
     return ('1' not in ''.join(messagePadded)[lenMessage:])
-
